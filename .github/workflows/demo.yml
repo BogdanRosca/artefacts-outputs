@@ -47,8 +47,8 @@ jobs:
       - name: Deploy
         run: |
           FILE=${{ needs.build.outputs.script-file }}
-          echo $FILE
-          if [ -e ~/.myexample/"$FILE" ]; then
+          echo "Looking for: $FILE"
+          if [ -e "$FILE" ]; then
               echo "File exists"
           else
               echo "File does not exist"
