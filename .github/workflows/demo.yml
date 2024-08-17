@@ -44,7 +44,7 @@ jobs:
         uses: actions/download-artifact@v4
         with:
           name: dist-files
-      - name: Deploy
+      - name: Check if JS file exists
         run: |
           FILE=${{ needs.build.outputs.script-file }}
           echo "Looking for: $FILE"
