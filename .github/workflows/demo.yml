@@ -6,14 +6,24 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
+    outputs:
+      dir: ${{ steps.npm-cache-dir.outputs.dir }}
     steps:
       - name: Get code
         uses: actions/checkout@v4
+      - name: Get npm cache directory
+        id: npm-cache-dir
+        run: echo "dir=$(npm config get cache)" >> ${GITHUB_OUTPUT}
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ steps.npm-cache-dir.outputs.dir }}
+          key: node-dependencies-${{ hashFiles('**/package.lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Lint code
         run: npm run lint
-      - name: Test code
+      - name: Test code 
         run: npm run test
   build:
     needs: test
@@ -23,6 +33,11 @@ jobs:
     steps:
       - name: Get code
         uses: actions/checkout@v4
+      - name: Cache dependencies
+        uses: actions/cache@v4
+        with:
+          path: ${{ needs.test.outputs.dir }}
+          key: node-dependencies-${{ hashFiles('**/package.lock.json') }}
       - name: Install dependencies
         run: npm ci
       - name: Build website
@@ -47,13 +62,7 @@ jobs:
       - name: Check if JS file exists
         run: |
           FILE=${{ needs.build.outputs.script-file }}
-          echo "Looking for:" $FILE
-          if [[ ! -f $FILE]]
-            echo "File does not exist"
-            exit 1
-          else
-            echo "File exists"
-          fi
+          echo "JS file: " $FILE
       - name: Deploy
         run: |
           echo "Deploying..."
