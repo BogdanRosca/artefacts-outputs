@@ -47,12 +47,12 @@ jobs:
       - name: Check if JS file exists
         run: |
           FILE=${{ needs.build.outputs.script-file }}
-          echo "Looking for: $FILE"
-          if [ -e "$FILE" ]; then
-              echo "File exists"
+          echo "Looking for:" $FILE
+          if [[ ! -f $FILE]]
+            echo "File does not exist"
+            exit 1
           else
-              echo "File does not exist"
-              exit 1
+            echo "File exists"
           fi
       - name: Deploy
         run: |
