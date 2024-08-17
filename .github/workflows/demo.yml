@@ -42,5 +42,5 @@ jobs:
       - name: Deploy
         run: |
           echo "Deploying..."
-          echo ls -la dist
+          echo ls 
 
